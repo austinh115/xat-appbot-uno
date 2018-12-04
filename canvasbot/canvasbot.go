@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -28,6 +29,7 @@ type CanvasBot struct {
 	Done         bool
 	LoggingIn    bool
 	JoinData     *Packet
+	Mutex        *sync.Mutex
 	*UNOGame
 }
 
@@ -63,7 +65,9 @@ func (bot *CanvasBot) Open() error {
 				case <-bot.killSignal:
 					return
 				default:
+					bot.Mutex.Lock()
 					line, err := bot.reader.ReadString('\000')
+					bot.Mutex.Unlock()
 					if err != nil {
 						if err == io.EOF {
 							bot.Close()
@@ -152,6 +156,10 @@ func (bot *CanvasBot) SendJ2(packet *Packet) {
 		if bot.JoinData.HasAttribute(attr) {
 			j2 = append(j2, []interface{}{attr, bot.JoinData.GetAttribute(attr)})
 		}
+	}
+
+	if bot.JoinData.HasAttribute("dO") {
+		j2 = append(j2, []interface{}{"dO", bot.JoinData.GetAttribute("dO")})
 	}
 
 	if bot.JoinData.HasAttribute("dx") {
@@ -260,6 +268,7 @@ func New(config *config.Configuration, handler func(bot *CanvasBot, packet *Pack
 		Config:       config,
 		Players:      make(map[string]int),
 		LoggingIn:    true,
+		Mutex:        &sync.Mutex{},
 	}
 	return bot, nil
 }
