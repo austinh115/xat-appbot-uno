@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"CanvasBot/canvasbot"
+	"../canvasbot"
 	"encoding/json"
 	"fmt"
 	"github.com/austinh115/lz-string-go"

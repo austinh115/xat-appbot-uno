@@ -1,7 +1,7 @@
 package canvasbot
 
 import (
-	"CanvasBot/config"
+	"../config"
 	"bufio"
 	"bytes"
 	"fmt"

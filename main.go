@@ -1,9 +1,9 @@
 package main
 
 import (
-	"CanvasBot/canvasbot"
-	"CanvasBot/config"
-	"CanvasBot/handler"
+	"./canvasbot"
+	"./config"
+	"./handler"
 	"log"
 	"math/rand"
 	"os"

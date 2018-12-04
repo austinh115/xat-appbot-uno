@@ -1,10 +1,10 @@
 package canvasbot
 
 import (
-	"CanvasBot/config"
-	"CanvasBot/global"
-	"CanvasBot/uno"
-	"CanvasBot/util"
+	"../config"
+	"../global"
+	"../uno"
+	"../util"
 	"encoding/json"
 	"fmt"
 	"github.com/austinh115/lz-string-go"

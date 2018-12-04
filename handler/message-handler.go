@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"CanvasBot/canvasbot"
-	"CanvasBot/global"
-	"CanvasBot/uno"
+	"../canvasbot"
+	"../global"
+	"../uno"
 	"log"
 	"strconv"
 	"strings"
