@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -119,44 +120,58 @@ func (bot *CanvasBot) Close() {
 }
 
 func (bot *CanvasBot) SendJ2(packet *Packet) {
-	bot.Send("j2",
-		[][]interface{}{
-			{"cb", 0},
+	j2 := [][]interface{}{
+		{"cb", 0},
 
-			{"l5", 65535},
-			{"l4", 500},
-			{"l3", 500},
-			{"l2", 0},
+		{"l5", 65535},
+		{"l4", 500},
+		{"l3", 500},
+		{"l2", 0},
 
-			{"y", packet.GetAttribute("i")},
+		{"y", packet.GetAttribute("i")},
 
-			{"k", bot.JoinData.GetAttribute("k1")},
-			{"k3", bot.JoinData.GetAttribute("k3")},
+		{"k", bot.JoinData.GetAttribute("k1")},
+		{"k3", bot.JoinData.GetAttribute("k3")},
 
-			{"z", "m1.5.12,3"},
+		{"z", "m1.5.12,3"},
 
-			{"d1", bot.JoinData.GetAttribute("d1")},
+		{"d1", bot.JoinData.GetAttribute("d1")},
 
-			{"p", 0},
-			{"c", config.Config.Chat},
-			{"f", 0},
+		{"p", 0},
+		{"c", config.Config.Chat},
+		{"f", 0},
 
-			{"u", bot.JoinData.GetAttribute("i")},
+		{"u", bot.JoinData.GetAttribute("i")},
+	}
 
-			{"d0", bot.JoinData.GetAttribute("d0")},
-			{"d2", bot.JoinData.GetAttribute("d2")},
-			{"d3", bot.JoinData.GetAttribute("d3")},
-			{"d20", bot.JoinData.GetAttribute("d20")},
-			{"dx", bot.JoinData.GetAttribute("dx")},
-			{"dt", bot.JoinData.GetAttribute("dt")},
+	for i := 0; i <= 25; i++ {
+		if i == 1 {
+			continue
+		}
+		attr := "d" + strconv.Itoa(i)
+		if bot.JoinData.HasAttribute(attr) {
+			j2 = append(j2, []interface{}{attr, bot.JoinData.GetAttribute(attr)})
+		}
+	}
 
-			{"N", config.Config.BotInfo.Username},
-			{"n", config.Config.BotInfo.Name},
-			{"a", config.Config.BotInfo.Avatar},
-			{"h", config.Config.BotInfo.Home},
+	if bot.JoinData.HasAttribute("dx") {
+		j2 = append(j2, []interface{}{"dx", bot.JoinData.GetAttribute("dx")})
+	}
 
-			{"v", ""},
-		})
+	if bot.JoinData.HasAttribute("dt") {
+		j2 = append(j2, []interface{}{"dt", bot.JoinData.GetAttribute("dt")})
+	}
+
+	j2 = append(j2, [][]interface{}{
+		{"N", config.Config.BotInfo.Username},
+		{"n", config.Config.BotInfo.Name},
+		{"a", config.Config.BotInfo.Avatar},
+		{"h", config.Config.BotInfo.Home},
+
+		{"v", ""},
+	}...)
+
+	bot.Send("j2", j2)
 }
 
 func (bot *CanvasBot) JoinChat() {
@@ -207,6 +222,9 @@ func (bot *CanvasBot) Send(tag string, data [][]interface{}) {
 	buf.WriteString("<" + tag + " ")
 
 	for k := range data {
+		if data[k][0] == "" || (data[k][1] == "" && data[k][0] != "h") {
+			continue
+		}
 		buf.WriteString(fmt.Sprintf("%v=\"%v\" ", data[k][0], data[k][1]))
 	}
 
